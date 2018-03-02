@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>郵便番号検索</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style type="text/css">
+        .container {
+            text-align: center;
+            margin-top: 100px;
+            width: 450px;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>郵便番号検索</h1>
+        <div class="form-group">
+            <label for="exampleInputText">住所を入力してください</label>
+            <input type="text" id="city" class="form-control" placeholder="ex. 大阪府大阪市北区小松原町">
+        </div>
+        <button class="btn btn-primary" id="btn">検索</button>
+        <div class="result" id="str"></div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="application/javascript">
+        var postalCode = "";
+        var btn = document.getElementById('btn');
+        btn.addEventListener('click', function() {
+            var city = document.getElementById('city');
+            if (city.value == "") {
+                alert("住所を入力してください");
+                document.getElementById("str").innerHTML = "<div class=\"alert alert-primary\" role=\"alert\">郵便番号が見つかりません。</div>";
+            } else {
+                const API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXX";	//your API Key
+                var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + city.value + "&key=" + API_KEY;
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function(data) {
+                        //console.log(data);
+                        postalCode = "";
+                        $.each(data['results'][0]['address_components'], function(key, value) {
+                            if (value["types"][0] == "postal_code") {
+                                postalCode = value["long_name"];
+                            }
+                        })
+                        if (postalCode) {
+                            document.getElementById("str").innerHTML = "<div class=\"alert alert-primary\" role=\"alert\">郵便番号は、" + postalCode + "です。</div>";
+                        } else {
+                            document.getElementById("str").innerHTML = "<div class=\"alert alert-primary\" role=\"alert\">郵便番号が見つかりません。</div>";
+                        }
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+</html>
